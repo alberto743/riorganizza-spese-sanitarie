@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: 2026 Alberto P
+# SPDX-License-Identifier: MPL-2.0
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "riorganizza-spese-sanitarie"
+version = "0.1.0"
+description = "Riorganizza l'export CSV delle spese sanitarie (Sistema TS / 730 precompilato) in una tabella con una riga per pagamento."
+license = "MPL-2.0"
+license-files = ["LICENSES/MPL-2.0.txt"]
+authors = [
+    { name = "Alberto P" },
+]
+requires-python = ">=3.10"
+dependencies = [
+    "openpyxl>=3.1",
+    "odfpy>=1.4",
+]
+
+[project.scripts]
+riorganizza-spese-sanitarie = "riorganizza_spese_sanitarie.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/riorganizza_spese_sanitarie"]
