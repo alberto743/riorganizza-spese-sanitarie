@@ -7,7 +7,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "riorganizza-spese-sanitarie"
-version = "0.1.0"
+version = "0.2.0"
 description = "Riorganizza l'export CSV delle spese sanitarie (Sistema TS / 730 precompilato) in una tabella con una riga per pagamento."
 license = "MPL-2.0"
 license-files = ["LICENSES/MPL-2.0.txt"]
@@ -23,5 +23,18 @@ dependencies = [
 [project.scripts]
 riorganizza-spese-sanitarie = "riorganizza_spese_sanitarie.cli:main"
 
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/riorganizza_spese_sanitarie"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 110
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

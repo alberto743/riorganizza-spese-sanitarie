@@ -2,8 +2,6 @@
 # SPDX-License-Identifier: MPL-2.0
 """Scrittura .ods (odfpy) — nessuna dipendenza da LibreOffice/soffice."""
 
-from __future__ import annotations
-
 from datetime import date
 from pathlib import Path
 
@@ -12,10 +10,9 @@ from .formule import COLORE_INTESTAZIONE, INTESTAZIONI, _righe_output
 
 
 def scrivi_ods(pagamenti: list[Pagamento], percorso: Path) -> None:
-    from odf.opendocument import OpenDocumentSpreadsheet
-    from odf.number import DateStyle, Day, Month, Number, NumberStyle
+    from odf.number import DateStyle, Day, Month, Number, NumberStyle, Year
     from odf.number import Text as NumberText
-    from odf.number import Year
+    from odf.opendocument import OpenDocumentSpreadsheet
     from odf.style import (
         ParagraphProperties,
         Style,
@@ -131,9 +128,7 @@ def scrivi_ods(pagamenti: list[Pagamento], percorso: Path) -> None:
     prima_riga_dati = 2
     ultima_riga_dati = 1 + n_righe_dati
     totale_generale = round(sum(sv.importo for p in pagamenti for sv in p.sottovoci), 2)
-    detraibile_generale = round(
-        sum(sv.importo for p in pagamenti for sv in p.sottovoci if sv.detraibile), 2
-    )
+    detraibile_generale = round(sum(sv.importo for p in pagamenti for sv in p.sottovoci if sv.detraibile), 2)
 
     riga = TableRow()
     riga.addElement(TableCell())  # colonna A vuota

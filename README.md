@@ -17,6 +17,14 @@ Richiede Python >= 3.10.
 pip install .
 ```
 
+Trattandosi di uno strumento a riga di comando, e' consigliabile installarlo
+con [pipx](https://pipx.pypa.io/) per non "sporcare" l'ambiente Python
+generale:
+
+```
+pipx install .
+```
+
 Dipendenze: solo librerie Python (`openpyxl` per `.xlsx`, `odfpy` per
 `.ods`). Nessun programma esterno (LibreOffice/soffice) e' richiesto.
 
@@ -51,16 +59,8 @@ scartate, vedi il docstring del modulo
 
 ## Sviluppo assistito da IA
 
-Il codice di questo progetto e' stato sviluppato con l'assistenza di uno
-strumento di intelligenza artificiale (Claude Code, Anthropic), sotto la
-guida e la revisione dell'autore umano indicato come copyright holder.
-L'IA e' stata impiegata per scrivere e rifattorizzare il codice sorgente e
-per predisporre l'impacchettamento del progetto (`pyproject.toml`,
-conformita' REUSE); la logica di interpretazione del CSV e le regole di
-calcolo (importo totale/detraibile) derivano da requisiti forniti
-dall'autore e sono state verificate manualmente. Trattandosi di uno
-strumento che elabora dati fiscali, si raccomanda comunque di verificare
-sempre l'output rispetto al CSV originale prima di un uso dichiarativo.
+Questo progetto e' stato sviluppato con l'assistenza di uno strumento di
+intelligenza artificiale.
 
 ## Licenza
 

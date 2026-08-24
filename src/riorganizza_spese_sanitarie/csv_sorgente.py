@@ -7,8 +7,6 @@ Il CSV originale elenca ogni pagamento come un "blocco" di righe: una riga
 legge il blocco e lo trasforma in oggetti `Pagamento`/`Sottovoce`.
 """
 
-from __future__ import annotations
-
 import csv
 from dataclasses import dataclass, field
 from datetime import date, datetime
@@ -134,10 +132,14 @@ def leggi_pagamenti(percorso_csv: Path) -> list[Pagamento]:
         if _e_riga_testata(riga):
             testo_data = _pulisci(riga[COL_DATA_PAGAMENTO]) or _pulisci(riga[COL_DATA_EMISSIONE])
             data_riconosciuta = _parse_data(testo_data)
+            try:
+                importo_totale_testata = _importo_a_float(riga[COL_IMPORTO_TOTALE])
+            except ValueError as exc:
+                raise ValueError(f"Riga {n_riga}: importo totale di testata non valido: {exc}") from exc
             corrente = Pagamento(
                 data_pagamento=data_riconosciuta if data_riconosciuta is not None else testo_data,
                 emesso_da=_pulisci(riga[COL_EMESSO_DA]),
-                importo_totale_testata=_importo_a_float(riga[COL_IMPORTO_TOTALE]),
+                importo_totale_testata=importo_totale_testata,
                 detraibile_testata=_pulisci(riga[COL_DETRAIBILE]).upper() == "SI",
             )
             pagamenti.append(corrente)
@@ -146,11 +148,13 @@ def leggi_pagamenti(percorso_csv: Path) -> list[Pagamento]:
         # riga sottovoce: deve appartenere a un pagamento gia' aperto
         if corrente is None:
             raise ValueError(
-                f"Riga {n_riga}: sottovoce trovata senza una riga di testata "
-                f"precedente. Contenuto: {riga}"
+                f"Riga {n_riga}: sottovoce trovata senza una riga di testata precedente. Contenuto: {riga}"
             )
         tipo_spesa = _pulisci(riga[COL_TIPO_SPESA])
-        importo = _importo_a_float(riga[COL_IMPORTO])
+        try:
+            importo = _importo_a_float(riga[COL_IMPORTO])
+        except ValueError as exc:
+            raise ValueError(f"Riga {n_riga}: importo di sottovoce non valido: {exc}") from exc
         if tipo_spesa == "" and importo == 0.0:
             continue  # riga sottovoce completamente vuota: la ignoriamo
         corrente.sottovoci.append(

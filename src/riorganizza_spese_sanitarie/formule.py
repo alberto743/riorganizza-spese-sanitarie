@@ -9,8 +9,6 @@ altre celle. Questo modulo e' condiviso dagli scrittori xlsx e ods per
 evitare di duplicare la logica di calcolo.
 """
 
-from __future__ import annotations
-
 from .csv_sorgente import Pagamento
 
 INTESTAZIONI = ["Data pagamento", "Emesso da", "Importo totale (in euro)", "Spesa detraibile"]

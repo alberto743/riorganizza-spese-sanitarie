@@ -72,12 +72,11 @@ Il formato di output e' determinato dall'estensione del file indicato
 (.xlsx oppure .ods).
 """
 
-from __future__ import annotations
-
 import argparse
 import sys
 from pathlib import Path
 
+from . import __version__
 from .csv_sorgente import leggi_pagamenti
 from .scrittura_ods import scrivi_ods
 from .scrittura_xlsx import scrivi_xlsx
@@ -89,18 +88,23 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("input_csv", type=Path, help="CSV di origine (export Sistema TS)")
     ap.add_argument("output", type=Path, help="File di destinazione: estensione .xlsx oppure .ods")
+    ap.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     args = ap.parse_args()
 
     scrittore = SCRITTORI.get(args.output.suffix.lower())
     if scrittore is None:
         ap.error(f"Estensione '{args.output.suffix}' non supportata. Usa .xlsx o .ods.")
 
-    pagamenti = leggi_pagamenti(args.input_csv)
-    max_sv = max(len(p.sottovoci) for p in pagamenti)
-    print(f"Letti {len(pagamenti)} pagamenti; max sottovoci per pagamento: {max_sv}", file=sys.stderr)
+    try:
+        pagamenti = leggi_pagamenti(args.input_csv)
+        max_sv = max((len(p.sottovoci) for p in pagamenti), default=0)
+        print(f"Letti {len(pagamenti)} pagamenti; max sottovoci per pagamento: {max_sv}", file=sys.stderr)
 
-    scrittore(pagamenti, args.output)
-    print(f"Scritto: {args.output}", file=sys.stderr)
+        scrittore(pagamenti, args.output)
+        print(f"Scritto: {args.output}", file=sys.stderr)
+    except (OSError, ValueError) as exc:
+        print(f"Errore: {exc}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

@@ -2,13 +2,19 @@
 # SPDX-License-Identifier: MPL-2.0
 """Scrittura .xlsx (openpyxl)."""
 
-from __future__ import annotations
-
 from datetime import date
 from pathlib import Path
 
 from .csv_sorgente import Pagamento
 from .formule import COLORE_INTESTAZIONE, FORMATO_DATA, FORMATO_VALUTA, INTESTAZIONI, _righe_output
+
+
+def _forza_testo(cella) -> None:
+    """Impedisce che openpyxl promuova a formula un valore stringa che
+    inizia con '=', '+', '-' o '@' (dato proveniente dal CSV di origine,
+    non fidato): senza questo, Excel eseguirebbe quel testo come formula
+    all'apertura del file."""
+    cella.data_type = "s"
 
 
 def scrivi_xlsx(pagamenti: list[Pagamento], percorso: Path) -> None:
@@ -41,10 +47,14 @@ def scrivi_xlsx(pagamenti: list[Pagamento], percorso: Path) -> None:
         cella_data.alignment = allinea_centro
         if isinstance(data_pag, date):
             cella_data.number_format = FORMATO_DATA
-        # se e' rimasta una stringa (data non riconosciuta nel CSV originale)
-        # la cella resta testo, per non perdere l'informazione originale.
+        else:
+            # data non riconosciuta nel CSV originale: resta testo, per non
+            # perdere l'informazione originale.
+            _forza_testo(cella_data)
 
-        ws.cell(row=r, column=2, value=emesso_da).font = font_normale
+        cella_emesso = ws.cell(row=r, column=2, value=emesso_da)
+        cella_emesso.font = font_normale
+        _forza_testo(cella_emesso)
 
         cella_totale = ws.cell(row=r, column=3, value=formula_tot)
         cella_totale.font = font_formula

@@ -7,17 +7,11 @@ build/
 dist/
 *.egg-info/
 
-# Virtual environments
+# Virtual environment
 .venv/
-venv/
 
-# Test / coverage
+# Test / lint caches
 .pytest_cache/
-.coverage
-htmlcov/
-
-# Tooling caches
-.mypy_cache/
 .ruff_cache/
 
 # Editors / OS
