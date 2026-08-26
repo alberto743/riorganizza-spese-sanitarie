@@ -7,7 +7,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "riorganizza-spese-sanitarie"
-version = "0.2.0"
+version = "0.2.1"
 description = "Riorganizza l'export CSV delle spese sanitarie (Sistema TS / 730 precompilato) in una tabella con una riga per pagamento."
 license = "MPL-2.0"
 license-files = ["LICENSES/MPL-2.0.txt"]

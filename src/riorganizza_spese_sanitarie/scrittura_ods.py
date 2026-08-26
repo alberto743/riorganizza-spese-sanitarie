@@ -86,7 +86,7 @@ def scrivi_ods(pagamenti: list[Pagamento], percorso: Path) -> None:
 
     # --- righe dati ---
     n_righe_dati = 0
-    for data_pag, emesso_da, formula_tot, valore_tot, formula_detr, valore_detr in _righe_output(pagamenti):
+    for data_pag, emesso_da, valore_tot, formula_detr, valore_detr in _righe_output(pagamenti):
         riga = TableRow()
 
         if isinstance(data_pag, date):
@@ -107,9 +107,7 @@ def scrivi_ods(pagamenti: list[Pagamento], percorso: Path) -> None:
         cella_emesso.addElement(P(text=emesso_da))
         riga.addElement(cella_emesso)
 
-        cella_tot = TableCell(
-            valuetype="float", value=valore_tot, formula="of:" + formula_tot, stylename=stile_formula
-        )
+        cella_tot = TableCell(valuetype="float", value=valore_tot, stylename=stile_formula)
         cella_tot.addElement(P(text=f"{valore_tot:.2f}".replace(".", ",")))
         riga.addElement(cella_tot)
 
@@ -127,7 +125,7 @@ def scrivi_ods(pagamenti: list[Pagamento], percorso: Path) -> None:
     #     piu' pagamenti, non la scomposizione di un singolo pagamento) ---
     prima_riga_dati = 2
     ultima_riga_dati = 1 + n_righe_dati
-    totale_generale = round(sum(sv.importo for p in pagamenti for sv in p.sottovoci), 2)
+    totale_generale = round(sum(p.importo_totale_testata for p in pagamenti), 2)
     detraibile_generale = round(sum(sv.importo for p in pagamenti for sv in p.sottovoci if sv.detraibile), 2)
 
     riga = TableRow()

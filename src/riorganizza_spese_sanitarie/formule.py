@@ -1,12 +1,14 @@
 # SPDX-FileCopyrightText: 2026 Alberto P
 # SPDX-License-Identifier: MPL-2.0
-"""Costruzione delle formule ad addendi letterali e delle righe di output.
+"""Costruzione della formula ad addendi letterali e delle righe di output.
 
-Su richiesta esplicita: nessuna colonna di appoggio per le sottovoci. Le
-colonne "Importo totale" e "Spesa detraibile" contengono una formula coi
-singoli importi scritti in chiaro (es. "=12+15+3"), non un riferimento ad
-altre celle. Questo modulo e' condiviso dagli scrittori xlsx e ods per
-evitare di duplicare la logica di calcolo.
+Su richiesta esplicita: nessuna colonna di appoggio per le sottovoci. La
+colonna "Spesa detraibile" contiene una formula coi singoli importi
+scritti in chiaro (es. "=12+15+3"), non un riferimento ad altre celle. La
+colonna "Importo totale" riporta invece il valore gia' presente nella riga
+di testata del CSV di origine (`importo_totale_testata`), senza
+ricalcolarlo dalle sottovoci. Questo modulo e' condiviso dagli scrittori
+xlsx e ods per evitare di duplicare la logica di calcolo.
 """
 
 from .csv_sorgente import Pagamento
@@ -42,9 +44,12 @@ def formula_e_totale(importi: list[float]) -> tuple[str, float]:
 
 def _righe_output(pagamenti: list[Pagamento]):
     """Genera, per ogni pagamento, la tupla di valori pronti per essere
-    scritti su una riga di output: (data, emesso_da, formula_totale,
-    valore_totale, formula_detraibile, valore_detraibile)."""
+    scritti su una riga di output: (data, emesso_da, valore_totale,
+    formula_detraibile, valore_detraibile).
+    Il totale e' il valore ricopiato dalla riga di testata del CSV di
+    origine, non ricalcolato dalle sottovoci; la spesa detraibile resta
+    invece una formula ad addendi letterali sulle sole sottovoci
+    detraibili."""
     for p in pagamenti:
-        formula_tot, valore_tot = formula_e_totale(p.importi_tutti)
         formula_detr, valore_detr = formula_e_totale(p.importi_detraibili)
-        yield p.data_pagamento, p.emesso_da, formula_tot, valore_tot, formula_detr, valore_detr
+        yield p.data_pagamento, p.emesso_da, p.importo_totale_testata, formula_detr, valore_detr

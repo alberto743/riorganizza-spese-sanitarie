@@ -24,7 +24,7 @@ def scrivi_xlsx(pagamenti: list[Pagamento], percorso: Path) -> None:
     font_intestazione = Font(name="Arial", bold=True, color="FFFFFF")
     fill_intestazione = PatternFill("solid", fgColor=COLORE_INTESTAZIONE)
     font_normale = Font(name="Arial")
-    font_formula = Font(name="Arial", bold=True)
+    font_risultato = Font(name="Arial", bold=True)
     allinea_centro = Alignment(horizontal="center", vertical="center", wrap_text=True)
     bordo_sottile = Border(*(Side(style="thin", color="D9D9D9"),) * 4)
 
@@ -41,7 +41,7 @@ def scrivi_xlsx(pagamenti: list[Pagamento], percorso: Path) -> None:
     ws.freeze_panes = "A2"
 
     r = 2
-    for data_pag, emesso_da, formula_tot, _v_tot, formula_detr, _v_detr in _righe_output(pagamenti):
+    for data_pag, emesso_da, valore_tot, formula_detr, _v_detr in _righe_output(pagamenti):
         cella_data = ws.cell(row=r, column=1, value=data_pag)
         cella_data.font = font_normale
         cella_data.alignment = allinea_centro
@@ -56,12 +56,12 @@ def scrivi_xlsx(pagamenti: list[Pagamento], percorso: Path) -> None:
         cella_emesso.font = font_normale
         _forza_testo(cella_emesso)
 
-        cella_totale = ws.cell(row=r, column=3, value=formula_tot)
-        cella_totale.font = font_formula
+        cella_totale = ws.cell(row=r, column=3, value=valore_tot)
+        cella_totale.font = font_risultato
         cella_totale.number_format = FORMATO_VALUTA
 
         cella_detraibile = ws.cell(row=r, column=4, value=formula_detr)
-        cella_detraibile.font = font_formula
+        cella_detraibile.font = font_risultato
         cella_detraibile.number_format = FORMATO_VALUTA
 
         for c in range(1, len(INTESTAZIONI) + 1):

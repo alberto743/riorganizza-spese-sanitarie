@@ -34,15 +34,16 @@ def test_righe_output():
                 Sottovoce("Farmaco", 12.50, True),
                 Sottovoce("Farmaco", 3.00, False),
             ],
+            importo_totale_testata=99.99,  # diverso dalla somma delle sottovoci (15.50):
+            # dimostra che il totale e' ricopiato dalla testata, non ricalcolato.
         ),
     ]
     righe = list(_righe_output(pagamenti))
 
     assert len(righe) == 1
-    data_pag, emesso_da, formula_tot, valore_tot, formula_detr, valore_detr = righe[0]
+    data_pag, emesso_da, valore_tot, formula_detr, valore_detr = righe[0]
     assert data_pag == date(2026, 2, 1)
     assert emesso_da == "Farmacia Rossi"
-    assert formula_tot == "=12.5+3"
-    assert valore_tot == 15.50
+    assert valore_tot == 99.99
     assert formula_detr == "=12.5"
     assert valore_detr == 12.50

@@ -12,11 +12,12 @@ PAGAMENTI = [
         data_pagamento=date(2026, 2, 1),
         emesso_da="=cmd|'/c calc'!A1",  # tentativo di formula-injection
         sottovoci=[Sottovoce("Farmaco", 12.50, True)],
+        importo_totale_testata=12.50,
     ),
 ]
 
 
-def test_scrivi_xlsx_intestazione_e_formula(tmp_path):
+def test_scrivi_xlsx_totale_ricopiato_e_formula_detraibile(tmp_path):
     from openpyxl import load_workbook
 
     percorso = tmp_path / "out.xlsx"
@@ -27,8 +28,12 @@ def test_scrivi_xlsx_intestazione_e_formula(tmp_path):
     assert [c.value for c in ws[1]] == INTESTAZIONI
 
     cella_totale = ws.cell(row=2, column=3)
-    assert cella_totale.value == "=12.5"
-    assert cella_totale.data_type == "f"
+    assert cella_totale.value == 12.50
+    assert cella_totale.data_type == "n"
+
+    cella_detraibile = ws.cell(row=2, column=4)
+    assert cella_detraibile.value == "=12.5"
+    assert cella_detraibile.data_type == "f"
 
 
 def test_scrivi_xlsx_emesso_da_non_diventa_formula(tmp_path):
@@ -45,7 +50,7 @@ def test_scrivi_xlsx_emesso_da_non_diventa_formula(tmp_path):
     assert cella_emesso.value == "=cmd|'/c calc'!A1"
 
 
-def test_scrivi_ods_intestazione_e_formula(tmp_path):
+def test_scrivi_ods_totale_ricopiato_e_formula_detraibile(tmp_path):
     from odf.opendocument import load
     from odf.table import TableCell, TableRow
     from odf.text import P
@@ -62,7 +67,11 @@ def test_scrivi_ods_intestazione_e_formula(tmp_path):
     assert testi_intestazione == INTESTAZIONI
 
     cella_totale = righe[1].getElementsByType(TableCell)[2]
-    assert cella_totale.getAttribute("formula") == "of:=12.5"
+    assert cella_totale.getAttribute("formula") is None
+    assert float(cella_totale.getAttribute("value")) == 12.50
+
+    cella_detraibile = righe[1].getElementsByType(TableCell)[3]
+    assert cella_detraibile.getAttribute("formula") == "of:=12.5"
 
 
 def test_scrivi_ods_emesso_da_resta_stringa(tmp_path):
